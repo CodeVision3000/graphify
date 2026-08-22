@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "procoder": {
+      "source": {
+        "source": "github",
+        "repo": "azrtydxb/procoder"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "procoder@procoder": true
+  }
+}

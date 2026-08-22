@@ -16,7 +16,10 @@ build/
 graphify-out/
 .graphify_*.json
 .graphify_python
-.claude/
+# Keep the shared project settings (procoder plugin registration) tracked;
+# personal overrides live in .claude/settings.local.json and stay ignored.
+.claude/*
+!.claude/settings.json
 skills/
 # The packaged skill bundles under graphify/skills/ are generated, committed
 # artifacts (rendered by tools/skillgen). Keep them tracked even though the
