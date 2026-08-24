@@ -1,0 +1,59 @@
+# procoder configuration for graphify.
+#
+# Only the settings this repository actually decides differently, or that a
+# reader would otherwise have to guess at, live here. Everything else stays on
+# procoder's built-in default; `procoder config` prints the effective value and
+# its source for all of them.
+#
+# Deliberately absent: [tools]. procoder's canonical Python formatter is ruff,
+# invoked over stdin with --stdin-filename so it resolves this repository's own
+# [tool.ruff] section in pyproject.toml (line-length 100, target py310). That is
+# already the formatter .pre-commit-config.yaml runs, so there is nothing to
+# override — the [tools] table only offers alternatives for js anyway.
+#
+# Also absent: [git] max_file_mb. The largest tracked file is
+# worked/rsl-siege-manager/graph.json at ~1.9 MB, comfortably under the 5 MB
+# default, so raising the threshold would only hide a future mistake.
+
+[lint]
+# Report, not block. pyproject.toml pins a deliberately narrow ruff baseline
+# (select = ["E9", "F63", "F7", "F82"]) with the standing note to keep it
+# conservative until upstream adopts a broader lint policy. procoder's curated
+# baselines are wider than that, so blocking on them here would override a
+# choice this repository made on purpose. The findings still get reported.
+policy = "report"
+
+[docs]
+# Report, not block. The documentation surface is large (README.md,
+# ARCHITECTURE.md, docs/, plus the generated skill bundles under
+# graphify/skills/), and a public-surface change that lands ahead of its docs
+# should be answered rather than stopped. Revisit once the docs domain has run
+# clean for a few sprints.
+policy = "report"
+
+[ci]
+# Report, not block. The workflows under .github/workflows/ pin actions by tag
+# (actions/checkout@v6, astral-sh/setup-uv@v8.1.0, pypa/gh-action-pypi-publish
+# @release/v1), not by commit SHA. Setting this to "block" today would fail the
+# gate on every commit until all three workflows are re-pinned — flip it in the
+# same change that does the re-pinning, not before.
+pin_actions_policy = "report"
+
+[test]
+# Block. This repository has one canonical suite — pytest over testpaths =
+# ["tests"] — and CI runs it on every push, so "the tests pass" is a fact that
+# can be established rather than asserted. With this set, `todo close` and
+# backlog story close refuse while the suite is red *or unverifiable*: a suite
+# that could not run is never counted as green.
+#
+# It gates the close controllers only, not ordinary commits. It does require a
+# working dev environment — `uv sync` so pytest and the tree-sitter grammars are
+# importable — otherwise every close reports the suite as unverifiable.
+policy = "block"
+
+[release]
+# The version-bearing files `procoder release` verifies before a tag. All three
+# carry the literal version string and must agree: pyproject.toml is the source
+# of truth, uv.lock restates it for the graphifyy package (regenerate with
+# `uv lock`, never by hand), and CHANGELOG.md heads the entry for the release.
+files = ["pyproject.toml", "uv.lock", "CHANGELOG.md"]
